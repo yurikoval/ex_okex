@@ -2,7 +2,7 @@ defmodule ExOkex.Ws do
   @moduledoc false
 
   use WebSockex
-  require Logger
+  import Logger, only: [info: 1]
 
   # Client API
   defmacro __using__(_opts) do
@@ -25,7 +25,7 @@ defmodule ExOkex.Ws do
       end
 
       def handle_info(:schedule, _state) do
-        ping_me()
+        ping_me(@ping_interval)
         {:noreply, :fake_state}
       end
 
@@ -41,8 +41,8 @@ defmodule ExOkex.Ws do
       end
 
       def auth_params do
-        api_key = Application.get_env("okex_api_key")
-        secret_key = Application.get_env("okex_secret_key")
+        api_key = Application.get_env(:okex, :okex_api_key)
+        secret_key = Application.get_env(:okex, :okex_secret_key)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
         path = "GET/users/self/verify"
         sign_data = "#{timestamp}#{path}"
@@ -54,7 +54,7 @@ defmodule ExOkex.Ws do
 
         %{
           api_key: api_key,
-          passphrase: Application.get_env("okex_passphrase"),
+          passphrase: Application.get_env(:okex, :okex_passphrase),
           timestamp: timestamp,
           sign: sign
         }
@@ -63,7 +63,7 @@ defmodule ExOkex.Ws do
       # Callbacks
 
       def handle_connect(_conn, state) do
-        Logger.info("Connected!")
+        info("Connected!")
         {:ok, state}
       end
 
@@ -74,8 +74,14 @@ defmodule ExOkex.Ws do
         |> handle_response()
       end
 
+      def handle_response([resp]) do
+        info("#{__MODULE__} received response: #{inspect(resp)}")
+        handle_response(resp)
+      end
+
       def handle_response(resp) do
-        Logger.info("#{__MODULE__} received response: #{inspect(resp)}")
+        info("#{__MODULE__} received response: #{inspect(resp)}")
+        {:ok, :fake_state}
       end
 
       def handle_disconnect(_, state), do: {:ok, state}
