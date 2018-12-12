@@ -8,7 +8,7 @@ defmodule ExOkex.Ws do
   defmacro __using__(_opts) do
     quote do
       @base "wss://real.okex.com:10440/websocket/okexapi"
-      @ping_interval Application.get_env(:okex, :ping_interval, 5_000)
+      @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(opts \\ []) do
         WebSockex.start_link(@base, __MODULE__, :fake_state, opts)
@@ -41,8 +41,8 @@ defmodule ExOkex.Ws do
       end
 
       def auth_params do
-        api_key = Application.get_env(:okex, :okex_api_key)
-        secret_key = Application.get_env(:okex, :okex_secret_key)
+        api_key = Application.get_env(:ex_okex, :api_key)
+        secret_key = Application.get_env(:ex_okex, :api_secret)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
         path = "GET/users/self/verify"
         sign_data = "#{timestamp}#{path}"
@@ -54,7 +54,7 @@ defmodule ExOkex.Ws do
 
         %{
           api_key: api_key,
-          passphrase: Application.get_env(:okex, :okex_passphrase),
+          passphrase: Application.get_env(:ex_okex, :api_passphrase),
           timestamp: timestamp,
           sign: sign
         }
