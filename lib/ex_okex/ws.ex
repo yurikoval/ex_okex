@@ -91,6 +91,8 @@ defmodule ExOkex.Ws do
 
       def terminate(_, %{catch_terminate: pid}), do: send(pid, :terminate)
       def terminate(_, _), do: :ok
+
+      defoverridable Module.definitions_in(__MODULE__)
     end
   end
 end
