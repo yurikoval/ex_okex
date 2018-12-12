@@ -37,6 +37,18 @@ config :ex_okex, api_key:        System.get_env("OKEX_API_KEY"),
                  api_passphrase: System.get_env("OKEX_API_PASSPHRASE")
 ```
 
+If you're using websocket then you need to do this config
+
+```elixir
+use Mix.Config
+
+config :ex_okex, api_key:        System.get_env("OKEX_API_KEY"),
+                 api_secret:     System.get_env("OKEX_API_SECRET"),
+                 api_passphrase: System.get_env("OKEX_API_PASSPHRASE"),
+                 ping_interval:  System.get_env("OKEX_PING_INTERVAL") # default is 5000
+```
+
+
 Alternatively, if you need to work with multiple OKEX accounts, the private API
 call functions accept an additional `config` (`ExOkex.Config` struct) parameter:
 
