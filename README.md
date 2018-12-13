@@ -85,6 +85,34 @@ iex> ExOkex.create_order(%{
    "result" => true}
 ```
 
+## Websocket
+
+You can subscrube to private and public Okex feeds by adding this to your application.ex, and creating a handler:
+
+```elixir
+worker(OkexWebSocketHandler, [
+  %{
+    channels: [
+      "ok_sub_futureusd_trades",
+      "ok_sub_futureusd_userinfo",
+      "ok_sub_futureusd_positions"
+    ],
+    require_auth: true
+  }
+])
+```
+
+```elixir
+defmodule OkexWebSocketHandler do
+  use ExOkex.Ws
+
+  def handle_response(resp, _state) do
+    IO.inspect(resp)
+    {:ok, resp}
+  end
+end
+```
+
 ## Additional Links
 
 [Full Documentation](https://hexdocs.pm/ex_okex/ExOkex.html)

@@ -12,15 +12,8 @@ defmodule ExOkex.Ws do
       @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(args \\ %{}) do
-        %{channel: channel} = args
-        state = %{channel: channel, heartbeat: 0}
+        state = Map.merge(args, %{heartbeat: 0})
         WebSockex.start_link(@base, __MODULE__, state, name: __MODULE__)
-      end
-
-      # V1
-      def login(server) do
-        params = Poison.encode!(%{event: "login", parameters: auth_params()})
-        send(server, {:ws_reply, {:text, params}})
       end
 
       # Callbacks
@@ -35,8 +28,13 @@ defmodule ExOkex.Ws do
         {:ok, state}
       end
 
-      def handle_info(:ws_subscribe, %{channel: channel} = state) do
-        subscribe(self(), channel)
+      def handle_info(:ws_subscribe, %{channels: channels, require_auth: require_auth} = state) do
+        if require_auth == true do
+          login(self())
+        end
+
+        Enum.each(channels, fn channel -> subscribe(self(), channel) end)
+
         send_after(self(), {:heartbeat, :ping, 1}, 20_000)
         {:ok, state}
       end
@@ -93,12 +91,17 @@ defmodule ExOkex.Ws do
 
       # Helpers
 
-      def subscribe(server, channel) do
+      defp subscribe(server, channel) do
         params = Poison.encode!(%{event: "addChannel", channel: channel})
         send(server, {:ws_reply, {:text, params}})
       end
 
-      def auth_params do
+      defp login(server) do
+        params = Poison.encode!(%{event: "login", parameters: auth_params()})
+        send(server, {:ws_reply, {:text, params}})
+      end
+
+      defp auth_params do
         api_key = Application.get_env(:ex_okex, :api_key)
         secret_key = Application.get_env(:ex_okex, :api_secret)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
