@@ -1,13 +1,13 @@
 defmodule ExOkex.Ws do
   @moduledoc false
 
-  use WebSockex
   import Logger, only: [info: 1, warn: 1]
   import Process, only: [send_after: 3]
 
   # Client API
   defmacro __using__(_opts) do
     quote do
+      use WebSockex
       @base "wss://real.okex.com:10440/websocket/okexapi"
       @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
@@ -78,11 +78,6 @@ defmodule ExOkex.Ws do
         |> handle_response(state)
       end
 
-      def handle_response([resp], state) do
-        info("#{__MODULE__} received response: #{inspect(resp)}")
-        handle_response(resp, state)
-      end
-
       def handle_response(resp, state) do
         info("#{__MODULE__} received response: #{inspect(resp)}")
         {:ok, state}
@@ -127,7 +122,7 @@ defmodule ExOkex.Ws do
         Map.put(state, :heartbeat, heartbeat + 1)
       end
 
-      defoverridable Module.definitions_in(__MODULE__)
+      defoverridable handle_response: 2
     end
   end
 end
