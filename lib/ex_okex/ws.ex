@@ -2,7 +2,8 @@ defmodule ExOkex.Ws do
   @moduledoc false
 
   use WebSockex
-  import Logger, only: [info: 1]
+  import Logger, only: [info: 1, warn: 1]
+  import Process, only: [send_after: 3]
 
   # Client API
   defmacro __using__(_opts) do
@@ -11,7 +12,9 @@ defmodule ExOkex.Ws do
       @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(args \\ %{}) do
-        WebSockex.start_link(@base, __MODULE__, args, name: __MODULE__)
+        %{channel: channel} = args
+        state = %{channel: channel, heartbeat: 0}
+        WebSockex.start_link(@base, __MODULE__, state, name: __MODULE__)
       end
 
       # V1
@@ -22,6 +25,10 @@ defmodule ExOkex.Ws do
 
       # Callbacks
 
+      def handle_pong(:pong, state) do
+        {:ok, inc_heartbeat(state)}
+      end
+
       def handle_connect(_conn, state) do
         info("OKEX Connected!")
         send(self(), :ws_subscribe)
@@ -30,11 +37,38 @@ defmodule ExOkex.Ws do
 
       def handle_info(:ws_subscribe, %{channel: channel} = state) do
         subscribe(self(), channel)
+        send_after(self(), {:heartbeat, :ping, 1}, 20_000)
         {:ok, state}
       end
 
       def handle_info({:ws_reply, frame}, state) do
         {:reply, frame, state}
+      end
+
+      def handle_info(
+            {:heartbeat, :ping, expected_heartbeat},
+            %{heartbeat: heartbeat} = state
+          ) do
+        if heartbeat >= expected_heartbeat do
+          send_after(self(), {:heartbeat, :ping, heartbeat + 1}, 1_000)
+          {:ok, state}
+        else
+          send_after(self(), {:heartbeat, :pong, heartbeat + 1}, 4_000)
+          {:reply, {:text, Poison.decode!(%{event: "ping"})}, state}
+        end
+      end
+
+      def handle_info(
+            {:heartbeat, :pong, expected_heartbeat},
+            %{heartbeat: heartbeat} = state
+          ) do
+        if heartbeat >= expected_heartbeat do
+          send_after(self(), {:heartbeat, :ping, heartbeat + 1}, 1_000)
+          {:ok, state}
+        else
+          warn("#{__MODULE__} terminated due to " <> "no heartbeat ##{heartbeat}")
+          {:close, state}
+        end
       end
 
       def handle_frame({:binary, compressed_data}, state) do
@@ -87,6 +121,10 @@ defmodule ExOkex.Ws do
           timestamp: timestamp,
           sign: sign
         }
+      end
+
+      defp inc_heartbeat(%{heartbeat: heartbeat} = state) do
+        Map.put(state, :heartbeat, heartbeat + 1)
       end
 
       defoverridable Module.definitions_in(__MODULE__)
