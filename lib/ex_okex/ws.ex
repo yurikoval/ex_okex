@@ -91,17 +91,17 @@ defmodule ExOkex.Ws do
 
       # Helpers
 
-      def subscribe(server, channel) do
+      defp subscribe(server, channel) do
         params = Poison.encode!(%{event: "addChannel", channel: channel})
         send(server, {:ws_reply, {:text, params}})
       end
 
-      def login(server) do
+      defp login(server) do
         params = Poison.encode!(%{event: "login", parameters: auth_params()})
         send(server, {:ws_reply, {:text, params}})
       end
 
-      def auth_params do
+      defp auth_params do
         api_key = Application.get_env(:ex_okex, :api_key)
         secret_key = Application.get_env(:ex_okex, :api_secret)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
