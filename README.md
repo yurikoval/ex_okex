@@ -2,6 +2,8 @@
 
 OKEX API client for Elixir.
 
+[![Build Status](https://travis-ci.com/acuityinnovations/ex_okex.svg?branch=master)](https://travis-ci.com/acuityinnovations/ex_okex)
+
 ## Installation
 
 List the Hex package in your application dependencies.
