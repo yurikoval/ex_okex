@@ -13,7 +13,8 @@ defmodule ExOkex.Ws do
 
       def start_link(args \\ %{}) do
         state = Map.merge(args, %{heartbeat: 0})
-        WebSockex.start_link(@base, __MODULE__, state, name: __MODULE__)
+        name = args[:name] || __MODULE__
+        WebSockex.start_link(@base, __MODULE__, state, name: name)
       end
 
       # Callbacks
