@@ -56,7 +56,7 @@ defmodule ExOkex.Futures do
 
       # TODO: Add response
   """
-  def cancel_order(instrument_id, order_ids = [], params \\ %{}, config \\ nil) do
+  def cancel_orders(instrument_id, order_ids \\ [], params \\ %{}, config \\ nil) do
     new_params = Map.merge(params, %{order_ids: order_ids})
     post("#{@prefix}/cancel_batch_orders/#{instrument_id}", new_params, config)
   end
