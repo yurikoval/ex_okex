@@ -8,7 +8,7 @@ defmodule ExOkex.Ws do
   defmacro __using__(_opts) do
     quote do
       use WebSockex
-      @base "wss://real.okex.com:10440/websocket/okexapi"
+      @base "wss://real.okex.com:10442/ws/v3"
       @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(args \\ %{}) do
@@ -34,8 +34,7 @@ defmodule ExOkex.Ws do
           login(self())
         end
 
-        Enum.each(channels, fn channel -> subscribe(self(), channel) end)
-
+        subscribe(self(), channels)
         send_after(self(), {:heartbeat, :ping, 1}, 20_000)
         {:ok, state}
       end
@@ -53,7 +52,7 @@ defmodule ExOkex.Ws do
           {:ok, state}
         else
           send_after(self(), {:heartbeat, :pong, heartbeat + 1}, 4_000)
-          {:reply, {:text, Poison.decode!(%{event: "ping"})}, state}
+          {:reply, {:text, Poison.decode!(%{op: "ping"})}, state}
         end
       end
 
@@ -92,17 +91,17 @@ defmodule ExOkex.Ws do
 
       # Helpers
 
-      defp subscribe(server, channel) do
-        params = Poison.encode!(%{event: "addChannel", channel: channel})
+      defp subscribe(server, channels) do
+        params = Poison.encode!(%{op: "subscribe", args: channels})
         send(server, {:ws_reply, {:text, params}})
       end
 
       defp login(server) do
-        params = Poison.encode!(%{event: "login", parameters: auth_params()})
+        params = Poison.encode!(%{op: "login", args: auth_args()})
         send(server, {:ws_reply, {:text, params}})
       end
 
-      defp auth_params do
+      defp auth_args do
         api_key = Application.get_env(:ex_okex, :api_key)
         secret_key = Application.get_env(:ex_okex, :api_secret)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
@@ -114,12 +113,12 @@ defmodule ExOkex.Ws do
           |> :crypto.hmac(secret_key, sign_data)
           |> Base.encode64()
 
-        %{
-          api_key: api_key,
-          passphrase: Application.get_env(:ex_okex, :api_passphrase),
-          timestamp: timestamp,
-          sign: sign
-        }
+        [
+          api_key,
+          Application.get_env(:ex_okex, :api_passphrase),
+          timestamp,
+          sign
+        ]
       end
 
       defp inc_heartbeat(%{heartbeat: heartbeat} = state) do
