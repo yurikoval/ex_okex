@@ -106,7 +106,9 @@ defmodule ExOkex.Ws do
       end
 
       defp auth_args(config) do
-        %{api_key: api_key, api_secret: api_secret} = Config.config_or_env_config(config)
+        %{api_key: api_key, api_secret: api_secret, api_passphrase: api_passphrase} =
+          Config.config_or_env_config(config)
+
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
         path = "GET/users/self/verify"
         sign_data = "#{timestamp}#{path}"
@@ -118,7 +120,7 @@ defmodule ExOkex.Ws do
 
         [
           api_key,
-          Application.get_env(:ex_okex, :api_passphrase),
+          api_passphrase,
           timestamp,
           sign
         ]
