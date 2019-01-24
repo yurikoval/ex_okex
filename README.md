@@ -73,7 +73,13 @@ ExOkex.list_accounts(config) # use the passed config struct param
 
 There's will be cases that we want to switch to different API keys base on different info or need. That's why we're supporting this.
 
+One of the use case when you want to have the dynamic API key feature is: when you want to using multiple API keys in the same app. In that case you simply need to spawn a process which encapsulate the config info. And each process with have it's own credentials to interact with Okex.
+
 So we can tell either API or Websocket module to use certain access keys to retrieve the API keys that we want.
+
+*NOTE*: The access key must be in string.
+
+*SECURITY*: The reason we chose to pass the access key around instead of actual value of the key is to reduce the security risk. And people can not inspect the key when the program up and running. And this follow `Tell don't ask` principle.
 
 #### Websocket
 
@@ -87,9 +93,17 @@ defmodule WsWrapper do
   use ExOkex.Ws
 end
 
-WsWrapper.start_link(%{access_keys: [:api_key1, :api_secret1, :api_passphrase1]})
+WsWrapper.start_link(%{
+  channels: ["futures/trade:BTC-USD-190904"],
+  require_auth: true,
+  config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
+})
 
-WsWrapper.start_link(%{access_keys: [:api_key2, :api_secret2, :api_passphrase2]})
+WsWrapper.start_link(%{
+  channels: ["futures/trade:BTC-USD-190904"],
+  require_auth: true,
+  config: %{access_keys: ["OK_2_API_KEY", "OK_2_API_SECRET", "OK_2_API_PASSPHRASE"]}
+})
 ```
 
 Then Websocket will use the above access_keys to get the key value from the environment variables.
@@ -101,7 +115,7 @@ Simply pass the config to the API call
 Example:
 
 ```elixir
-config = %{access_keys: [:api_key1, :api_secret1, :api_passphrase1]}
+config = %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
 
 ExOkex.Futures.create_bulk_orders(
   [
