@@ -8,12 +8,13 @@ defmodule ExOkex.Ws do
   defmacro __using__(_opts) do
     quote do
       use WebSockex
+      alias ExOkex.Config
       @base "wss://real.okex.com:10442/ws/v3"
       @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(args \\ %{}) do
-        state = Map.merge(args, %{heartbeat: 0})
         name = args[:name] || __MODULE__
+        state = Map.merge(args, %{heartbeat: 0})
         WebSockex.start_link(@base, __MODULE__, state, name: name)
       end
 
@@ -29,9 +30,12 @@ defmodule ExOkex.Ws do
         {:ok, state}
       end
 
-      def handle_info(:ws_subscribe, %{channels: channels, require_auth: require_auth} = state) do
+      def handle_info(
+            :ws_subscribe,
+            %{channels: channels, require_auth: require_auth} = state
+          ) do
         if require_auth == true do
-          login(self())
+          login(self(), Map.get(state, :config))
         end
 
         subscribe(self(), channels)
@@ -96,21 +100,20 @@ defmodule ExOkex.Ws do
         send(server, {:ws_reply, {:text, params}})
       end
 
-      defp login(server) do
-        params = Poison.encode!(%{op: "login", args: auth_args()})
+      defp login(server, config) do
+        params = Poison.encode!(%{op: "login", args: auth_args(config)})
         send(server, {:ws_reply, {:text, params}})
       end
 
-      defp auth_args do
-        api_key = Application.get_env(:ex_okex, :api_key)
-        secret_key = Application.get_env(:ex_okex, :api_secret)
+      defp auth_args(config) do
+        %{api_key: api_key, api_secret: api_secret} = Config.config_or_env_config(config)
         timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
         path = "GET/users/self/verify"
         sign_data = "#{timestamp}#{path}"
 
         sign =
           :sha256
-          |> :crypto.hmac(secret_key, sign_data)
+          |> :crypto.hmac(api_secret, sign_data)
           |> Base.encode64()
 
         [

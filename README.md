@@ -18,6 +18,10 @@ Run `mix deps.get` to install.
 
 ## Configuration
 
+### Static API Key
+
+Static API Key is the key you setup once and would never change. And this is what we need for most cases.
+
 Add the following configuration variables in your config/config.exs file:
 
 ```elixir
@@ -63,6 +67,55 @@ config = %ExOkex.Config{
 }
 ExOkex.list_accounts() # use config as specified in config.exs
 ExOkex.list_accounts(config) # use the passed config struct param
+```
+
+### Dynamic API Key
+
+There's will be cases that we want to switch to different API keys base on different info or need. That's why we're supporting this.
+
+So we can tell either API or Websocket module to use certain access keys to retrieve the API keys that we want.
+
+#### Websocket
+
+During the setup you can pass the access keys as argument. Ex:
+
+```elixir
+defmodule WsWrapper do
+  @moduledoc false
+
+  require Logger
+  use ExOkex.Ws
+end
+
+WsWrapper.start_link(%{access_keys: [:api_key1, :api_secret1, :api_passphrase1]})
+
+WsWrapper.start_link(%{access_keys: [:api_key2, :api_secret2, :api_passphrase2]})
+```
+
+Then Websocket will use the above access_keys to get the key value from the environment variables.
+
+#### API
+
+Simply pass the config to the API call
+
+Example:
+
+```elixir
+config = %{access_keys: [:api_key1, :api_secret1, :api_passphrase1]}
+
+ExOkex.Futures.create_bulk_orders(
+  [
+    %{
+      "instrument_id":"BTC-USD-180213",
+      "type":"1",
+      "price":"432.11",
+      "size":"2",
+      "match_price":"0",
+      "leverage":"10"
+    },
+  ],
+  config
+)
 ```
 
 ## Usage
