@@ -18,6 +18,10 @@ Run `mix deps.get` to install.
 
 ## Configuration
 
+### Static API Key
+
+Static API Key is the key you setup once and would never change. And this is what we need for most cases.
+
 Add the following configuration variables in your config/config.exs file:
 
 ```elixir
@@ -63,6 +67,69 @@ config = %ExOkex.Config{
 }
 ExOkex.list_accounts() # use config as specified in config.exs
 ExOkex.list_accounts(config) # use the passed config struct param
+```
+
+### Dynamic API Key
+
+There will be cases when we want to switch to different API keys based on different info or need. That's why we're supporting this.
+
+One of the use case when you want to have the dynamic API key feature is: when you want to using multiple API keys in the same app. In that case you simply need to spawn a process which encapsulate the config info. And each process with have it's own credentials to interact with Okex.
+
+So we can tell either API or Websocket module to use certain access keys to retrieve the API keys that we want.
+
+*NOTE*: The access key must be in string.
+
+*SECURITY*: Access key is passed around instead of actual value of the key is to reduce the security risk. People can not inspect the key when the program up and running. This follow Tell, don't ask principle.
+
+#### Websocket
+
+During the setup you can pass the access keys as argument. Ex:
+
+```elixir
+defmodule WsWrapper do
+  @moduledoc false
+
+  require Logger
+  use ExOkex.Ws
+end
+
+WsWrapper.start_link(%{
+  channels: ["futures/trade:BTC-USD-190904"],
+  require_auth: true,
+  config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
+})
+
+WsWrapper.start_link(%{
+  channels: ["futures/trade:BTC-USD-190904"],
+  require_auth: true,
+  config: %{access_keys: ["OK_2_API_KEY", "OK_2_API_SECRET", "OK_2_API_PASSPHRASE"]}
+})
+```
+
+Then Websocket will use the above access_keys to get the key value from the environment variables.
+
+#### API
+
+Simply pass the config to the API call
+
+Example:
+
+```elixir
+config = %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
+
+ExOkex.Futures.create_bulk_orders(
+  [
+    %{
+      "instrument_id":"BTC-USD-180213",
+      "type":"1",
+      "price":"432.11",
+      "size":"2",
+      "match_price":"0",
+      "leverage":"10"
+    },
+  ],
+  config
+)
 ```
 
 ## Usage
