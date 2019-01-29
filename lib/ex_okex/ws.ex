@@ -73,6 +73,15 @@ defmodule ExOkex.Ws do
         end
       end
 
+      @doc """
+      Handles pong response from the okex
+      """
+      def handle_frame({:binary, <<43, 200, 207, 75, 7, 0>> = pong}, state) do
+        pong
+        |> :zlib.unzip()
+        |> handle_response(state)
+      end
+
       def handle_frame({:binary, compressed_data}, state) do
         compressed_data
         |> :zlib.unzip()
