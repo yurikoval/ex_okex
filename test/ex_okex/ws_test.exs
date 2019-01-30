@@ -10,6 +10,8 @@ defmodule ExOkex.WsTest do
 
   use ExUnit.Case, async: true
 
+  import ExUnit.CaptureLog
+
   setup do
     channels = ["futures/trade:BTC-USD-190904"]
 
@@ -33,6 +35,14 @@ defmodule ExOkex.WsTest do
                heartbeat: 0,
                require_auth: false
              }
+    end
+
+    test "pong response from okex", %{socket: socket} do
+      data = {:binary, <<43, 200, 207, 75, 7, 0>>}
+      state = :sys.get_state(socket)
+
+      assert capture_log(fn -> WsWrapper.handle_frame(data, state) end) =~
+               "received response: \"pong\""
     end
   end
 end
