@@ -56,7 +56,7 @@ defmodule ExOkex.Ws do
           {:ok, state}
         else
           send_after(self(), {:heartbeat, :pong, heartbeat + 1}, 4_000)
-          {:reply, {:text, Poison.decode!(%{op: "ping"})}, state}
+          {:reply, {:text, "ping"}, state}
         end
       end
 
@@ -79,7 +79,7 @@ defmodule ExOkex.Ws do
       def handle_frame({:binary, <<43, 200, 207, 75, 7, 0>> = pong}, state) do
         pong
         |> :zlib.unzip()
-        |> handle_response(state)
+        |> handle_response(state |> inc_heartbeat())
       end
 
       def handle_frame({:binary, compressed_data}, state) do
