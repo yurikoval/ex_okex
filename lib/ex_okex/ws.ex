@@ -94,7 +94,10 @@ defmodule ExOkex.Ws do
         {:ok, state}
       end
 
-      def handle_disconnect(_, state), do: {:ok, state}
+      def handle_disconnect(resp, state) do
+        info("OKEX Disconnected! #{inspect(resp)}")
+        {:ok, state}
+      end
 
       def terminate({:local, :normal}, %{catch_terminate: pid}),
         do: send(pid, :normal_close_terminate)
