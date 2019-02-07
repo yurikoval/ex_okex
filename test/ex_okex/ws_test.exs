@@ -55,4 +55,22 @@ defmodule ExOkex.WsTest do
                "OKEX Disconnected!"
     end
   end
+
+  describe "overrides" do
+    defmodule WsWrapperOverride do
+      @moduledoc false
+      require Logger
+      use ExOkex.Ws
+
+      def handle_connect(_, _), do: :works
+      def handle_disconnect(_, _), do: :works
+      def handle_response(_, _), do: :works
+    end
+
+    test "it can override" do
+      assert :works == WsWrapperOverride.handle_connect(nil, nil)
+      assert :works == WsWrapperOverride.handle_disconnect(nil, nil)
+      assert :works == WsWrapperOverride.handle_response(nil, nil)
+    end
+  end
 end

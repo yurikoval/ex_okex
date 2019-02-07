@@ -142,7 +142,7 @@ defmodule ExOkex.Ws do
         Map.put(state, :heartbeat, heartbeat + 1)
       end
 
-      defoverridable handle_response: 2
+      defoverridable handle_connect: 2, handle_disconnect: 2, handle_response: 2
     end
   end
 end
