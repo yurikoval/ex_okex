@@ -44,4 +44,15 @@ defmodule ExOkex.WsTest do
                "received response: \"pong\""
     end
   end
+
+  describe "logging" do
+    test "it logs connect", %{state: state} do
+      assert capture_log(fn -> WsWrapper.handle_connect(%{}, state) end) =~ "OKEX Connected!"
+    end
+
+    test "it logs disconnect", %{state: state} do
+      assert capture_log(fn -> WsWrapper.handle_disconnect(%{}, state) end) =~
+               "OKEX Disconnected!"
+    end
+  end
 end
