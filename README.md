@@ -64,6 +64,7 @@ config = %ExOkex.Config{
   api_secret: "API_SECRET",
   api_passphrase: "API_PASSPHRASE",
   api_url: "API_URL" # optional
+  ws_endpoint: "wss://real.okex.com:10442/ws/v3" # optional
 }
 ExOkex.list_accounts() # use config as specified in config.exs
 ExOkex.list_accounts(config) # use the passed config struct param
