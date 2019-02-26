@@ -25,7 +25,7 @@ defmodule ExOkex.Ws do
       end
 
       def handle_connect(_conn, state) do
-        info("OKEX Connected!")
+        :ok = info("OKEX Connected!")
         send(self(), :ws_subscribe)
         {:ok, state}
       end
@@ -68,7 +68,7 @@ defmodule ExOkex.Ws do
           send_after(self(), {:heartbeat, :ping, heartbeat + 1}, 1_000)
           {:ok, state}
         else
-          warn("#{__MODULE__} terminated due to " <> "no heartbeat ##{heartbeat}")
+          :ok = warn("#{__MODULE__} terminated due to " <> "no heartbeat ##{heartbeat}")
           {:close, state}
         end
       end
@@ -90,12 +90,12 @@ defmodule ExOkex.Ws do
       end
 
       def handle_response(resp, state) do
-        info("#{__MODULE__} received response: #{inspect(resp)}")
+        :ok = info("#{__MODULE__} received response: #{inspect(resp)}")
         {:ok, state}
       end
 
       def handle_disconnect(resp, state) do
-        info("OKEX Disconnected! #{inspect(resp)}")
+        :ok = info("OKEX Disconnected! #{inspect(resp)}")
         {:ok, state}
       end
 
