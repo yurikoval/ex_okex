@@ -75,4 +75,18 @@ defmodule ExOkex.Futures do
   def list_accounts(config \\ nil) do
     get("#{@prefix}/accounts", %{}, config)
   end
+
+  @doc """
+  Get the information of holding positions of a contract.
+
+  https://www.okex.com/docs/en/#futures-hold_information
+
+  ## Examples
+
+      iex(3)> ExOkex.Futures.get_position("BTC-USD-190329")
+
+  """
+  def get_position(instrument_id, config \\ nil) do
+    get("#{@prefix}/#{instrument_id}/position", %{}, config)
+  end
 end
