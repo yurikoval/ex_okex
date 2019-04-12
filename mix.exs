@@ -25,7 +25,7 @@ defmodule ExOkex.Mixfile do
     [
       {:httpoison, "~> 1.0"},
       {:poison, ">= 3.1.0 and < 4.1.0"},
-      {:mock, "~> 0.2.1", only: :test},
+      {:mock, "~> 0.3.3", only: :test},
       {:credo, "~> 0.8.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
