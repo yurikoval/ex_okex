@@ -1,6 +1,7 @@
 defmodule ExOkex.Futures do
+  import ExOkex.Api.Private
+
   @prefix "/api/futures/v3"
-  import ExOkex.Api
 
   @moduledoc """
   Futures account client.

@@ -1,4 +1,4 @@
-defmodule ExOkex.Api do
+defmodule ExOkex.Api.Private do
   @moduledoc """
   Provides basic HTTP interface with API.
   """

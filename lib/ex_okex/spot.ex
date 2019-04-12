@@ -1,6 +1,7 @@
 defmodule ExOkex.Spot do
+  import ExOkex.Api.Private
+
   @prefix "/api/spot/v3"
-  import ExOkex.Api
 
   @moduledoc """
   Spot account client.

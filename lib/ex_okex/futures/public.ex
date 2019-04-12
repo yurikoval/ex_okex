@@ -1,5 +1,5 @@
 defmodule ExOkex.Futures.Public do
-  import ExOkex.Api
+  import ExOkex.Api.Private
 
   @prefix "/api/futures/v3"
 
