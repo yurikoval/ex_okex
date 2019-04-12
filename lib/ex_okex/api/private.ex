@@ -1,7 +1,9 @@
 defmodule ExOkex.Api.Private do
   @moduledoc """
-  Provides basic HTTP interface with API.
+  Interface for authenticated HTTP requests
   """
+
+  import ExOkex.Api
   alias ExOkex.Config
 
   def get(path, params \\ %{}, config \\ nil) do
@@ -32,19 +34,6 @@ defmodule ExOkex.Api.Private do
     |> parse_response()
   end
 
-  defp url(path, config), do: config.api_url <> path
-
-  defp query_string(path, params) when map_size(params) == 0, do: path
-
-  defp query_string(path, params) do
-    query =
-      params
-      |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
-      |> Enum.join("&")
-
-    path <> "?" <> query
-  end
-
   defp headers(method, path, body, config) do
     timestamp =
       DateTime.utc_now()
@@ -68,22 +57,5 @@ defmodule ExOkex.Api.Private do
     :sha256
     |> :crypto.hmac(key, data)
     |> Base.encode64()
-  end
-
-  defp parse_response(response) do
-    case response do
-      {:ok, %HTTPoison.Response{body: body, status_code: code}} ->
-        if code in 200..299 do
-          {:ok, Poison.decode!(body)}
-        else
-          case Poison.decode(body) do
-            {:ok, json} -> {:error, {json["code"], json["message"]}, code}
-            {:error, _} -> {:error, body, code}
-          end
-        end
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-    end
   end
 end
