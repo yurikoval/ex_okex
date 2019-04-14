@@ -1,4 +1,4 @@
-defmodule ExOkex.Futures do
+defmodule ExOkex.Futures.Private do
   import ExOkex.Api.Private
 
   @prefix "/api/futures/v3"
