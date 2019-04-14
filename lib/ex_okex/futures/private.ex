@@ -14,11 +14,20 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-      iex> ExOkex.Futures.create_order(%{"instrument_id":"BTC-USD-180213","type":"1","price":"432.11","size":"2","match_price":"0","leverage":"10"})
+  iex> ExOkex.Futures.create_order(%{
+    instrument_id: "BTC-USD-180213",
+    leverage: "10",
+    orders_data: [%{
+      type: "1",
+      price: "432.11",
+      size: "2",
+      match_price: "0"
+    }]
+  })
       # TODO: Add response sample
   """
   def create_order(params, config \\ nil) do
-    create_bulk_orders([params], config)
+    post("#{@prefix}/orders", params, config)
   end
 
   @doc """
