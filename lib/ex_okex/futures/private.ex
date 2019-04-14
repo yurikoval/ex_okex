@@ -24,7 +24,7 @@ defmodule ExOkex.Futures.Private do
       match_price: "0"
     }]
   })
-      # TODO: Add response sample
+  {:ok, %{"order_info" => [%{"error_code" => 0, "error_message" => "", "order_id" => "2653481276189696"}], "result" => true}}
   """
   def create_order(params, config \\ nil) do
     post("#{@prefix}/orders", params, config)
