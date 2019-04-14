@@ -21,7 +21,7 @@ defmodule ExOkex.Api.Private do
 
     path
     |> url(config)
-    |> HTTPoison.post(Poison.encode!(params), headers("POST", path, params, config))
+    |> HTTPoison.post(Jason.encode!(params), headers("POST", path, params, config))
     |> parse_response()
   end
 
@@ -51,7 +51,7 @@ defmodule ExOkex.Api.Private do
 
   defp sign_request(timestamp, method, path, body, config) do
     key = config.api_secret || ""
-    body = if Enum.empty?(body), do: "", else: Poison.encode!(body)
+    body = if Enum.empty?(body), do: "", else: Jason.encode!(body)
     data = "#{timestamp}#{method}#{path}#{body}"
 
     :sha256
