@@ -1,6 +1,12 @@
 defmodule ExOkex.Api do
+  @type path :: String.t()
+  @type config :: ExOkex.Config.t()
+  @type params :: map
+
+  @spec url(path, config) :: String.t()
   def url(path, config), do: config.api_url <> path
 
+  @spec query_string(path, params) :: String.t()
   def query_string(path, params) when map_size(params) == 0, do: path
 
   def query_string(path, params) do
