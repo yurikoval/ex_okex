@@ -121,21 +121,10 @@ defmodule ExOkex.Ws do
         %{api_key: api_key, api_secret: api_secret, api_passphrase: api_passphrase} =
           Config.config_or_env_config(config)
 
-        timestamp = Float.to_string(:os.system_time(:millisecond) / 1000)
-        path = "GET/users/self/verify"
-        sign_data = "#{timestamp}#{path}"
+        timestamp = ExOkex.Auth.timestamp()
+        signed = ExOkex.Auth.sign(timestamp, "GET", "/users/self/verify", %{}, api_secret)
 
-        sign =
-          :sha256
-          |> :crypto.hmac(api_secret, sign_data)
-          |> Base.encode64()
-
-        [
-          api_key,
-          api_passphrase,
-          timestamp,
-          sign
-        ]
+        [api_key, api_passphrase, timestamp, signed]
       end
 
       defp inc_heartbeat(%{heartbeat: heartbeat} = state) do
