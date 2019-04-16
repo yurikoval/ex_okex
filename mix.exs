@@ -24,12 +24,12 @@ defmodule ExOkex.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 1.0"},
-      {:poison, ">= 3.1.0 and < 4.1.0"},
+      {:jason, "~> 1.1"},
+      {:websockex, "~> 0.4.0"},
       {:mock, "~> 0.3.3", only: :test},
       {:credo, "~> 0.8.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
-      {:websockex, "~> 0.4.0"}
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
     ]
   end
 

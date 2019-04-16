@@ -16,9 +16,9 @@ defmodule ExOkex.Api do
     case response do
       {:ok, %HTTPoison.Response{body: body, status_code: code}} ->
         if code in 200..299 do
-          {:ok, Poison.decode!(body)}
+          {:ok, Jason.decode!(body)}
         else
-          case Poison.decode(body) do
+          case Jason.decode(body) do
             {:ok, json} -> {:error, {json["code"], json["message"]}, code}
             {:error, _} -> {:error, body, code}
           end

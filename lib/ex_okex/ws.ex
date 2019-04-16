@@ -85,7 +85,7 @@ defmodule ExOkex.Ws do
       def handle_frame({:binary, compressed_data}, state) do
         compressed_data
         |> :zlib.unzip()
-        |> Poison.decode!()
+        |> Jason.decode!()
         |> handle_response(state)
       end
 
@@ -108,12 +108,12 @@ defmodule ExOkex.Ws do
       # Helpers
 
       defp subscribe(server, channels) do
-        params = Poison.encode!(%{op: "subscribe", args: channels})
+        params = Jason.encode!(%{op: "subscribe", args: channels})
         send(server, {:ws_reply, {:text, params}})
       end
 
       defp login(server, config) do
-        params = Poison.encode!(%{op: "login", args: auth_args(config)})
+        params = Jason.encode!(%{op: "login", args: auth_args(config)})
         send(server, {:ws_reply, {:text, params}})
       end
 
