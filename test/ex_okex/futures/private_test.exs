@@ -1,9 +1,7 @@
-defmodule ExOkex.FuturesTest do
+defmodule ExOkex.Futures.PrivateTest do
   use ExUnit.Case
-
   import TestHelper
-
-  alias ExOkex.Futures, as: Api
+  alias ExOkex.Futures.Private, as: Api
 
   describe ".create_order" do
     test "returns placed order" do
