@@ -2,6 +2,14 @@ defmodule ExOkex.Config do
   @moduledoc """
   Stores configuration variables for signing authenticated requests to API.
   """
+
+  @type t :: %ExOkex.Config{
+          api_key: String.t(),
+          api_secret: String.t() | nil,
+          api_passphrase: String.t(),
+          api_url: String.t()
+        }
+
   @default_api_url "https://www.okex.com"
   defstruct [:api_key, :api_secret, :api_passphrase, api_url: @default_api_url]
 

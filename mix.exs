@@ -29,7 +29,8 @@ defmodule ExOkex.Mixfile do
       {:mock, "~> 0.3.3", only: :test},
       {:credo, "~> 0.8.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false}
     ]
   end
 

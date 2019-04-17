@@ -1,13 +1,17 @@
 defmodule ExOkex.Futures.Private do
-  import ExOkex.Api.Private
-
-  @prefix "/api/futures/v3"
-
   @moduledoc """
   Futures account client.
 
   [API docs](https://www.okex.com/docs/en/#futures-README)
   """
+
+  import ExOkex.Api.Private
+
+  @type params :: map
+  @type config :: ExOkex.Config.t()
+  @type response :: ExOkex.Api.response()
+
+  @prefix "/api/futures/v3"
 
   @doc """
   Place a new order.
@@ -26,6 +30,7 @@ defmodule ExOkex.Futures.Private do
   })
   {:ok, %{"order_info" => [%{"error_code" => 0, "error_message" => "", "order_id" => "2653481276189696"}], "result" => true}}
   """
+  @spec create_order(params, config | nil) :: response
   def create_order(params, config \\ nil) do
     post("#{@prefix}/orders", params, config)
   end
@@ -49,6 +54,7 @@ defmodule ExOkex.Futures.Private do
     # TODO: Add response sample
 
   """
+  @spec create_bulk_orders([params], config | nil) :: response
   def create_bulk_orders(params, config \\ nil) do
     post("#{@prefix}/orders", params, config)
   end

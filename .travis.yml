@@ -4,4 +4,12 @@ elixir:
   - '1.6'
   - '1.7'
   - '1.8'
+
 otp_release: '21.0'
+
+script:
+  - mix dialyzer --halt-exit-status
+
+cache:
+  directories:
+    - _build/dev
