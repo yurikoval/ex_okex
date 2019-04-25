@@ -1,7 +1,7 @@
-defmodule ExOkex.SpotTest do
+defmodule ExOkex.Spot.PrivateTest do
   use ExUnit.Case
-
   import TestHelper
+  alias ExOkex.Futures.Private, as: Api
 
   describe ".create_order" do
     test "returns placed order" do
@@ -9,7 +9,11 @@ defmodule ExOkex.SpotTest do
 
       with_mock_request(:post, response, fn ->
         assert {:ok, %{"price" => "1.00"}} ==
-                 ExOkex.Spot.create_order(%{side: "buy", product_id: "ETH-USD", price: "1.00"})
+                 Api.create_order(%{
+                   side: "buy",
+                   product_id: "ETH-USD",
+                   price: "1.00"
+                 })
       end)
     end
   end
@@ -19,7 +23,7 @@ defmodule ExOkex.SpotTest do
       response = http_response([%{"balance" => "0.00"}], 200)
 
       with_mock_request(:get, response, fn ->
-        assert {:ok, [%{"balance" => "0.00"}]} == ExOkex.Spot.list_accounts()
+        assert {:ok, [%{"balance" => "0.00"}]} == Api.list_accounts()
       end)
     end
 
@@ -33,7 +37,7 @@ defmodule ExOkex.SpotTest do
       response = http_response([%{"balance" => "0.00"}], 200)
 
       with_mock_request(:get, response, fn ->
-        assert {:ok, [%{"balance" => "0.00"}]} == ExOkex.Spot.list_accounts(config)
+        assert {:ok, [%{"balance" => "0.00"}]} == Api.list_accounts(config)
       end)
     end
   end
