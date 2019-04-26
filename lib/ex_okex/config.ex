@@ -5,7 +5,7 @@ defmodule ExOkex.Config do
 
   @type t :: %ExOkex.Config{
           api_key: String.t(),
-          api_secret: String.t() | nil,
+          api_secret: String.t(),
           api_passphrase: String.t(),
           api_url: String.t()
         }
