@@ -1,4 +1,4 @@
-defmodule ExOkex.Spot do
+defmodule ExOkex.Spot.Private do
   import ExOkex.Api.Private
 
   @prefix "/api/spot/v3"
@@ -14,7 +14,7 @@ defmodule ExOkex.Spot do
 
   ## Examples
 
-      iex> ExOkex.create_order(%{type: "limit", side: "buy", product_id: "ETH-USD", price: "0.50", size: "1.0"})
+      iex> ExOkex.Spot.Private.create_order(%{type: "limit", side: "buy", product_id: "ETH-USD", price: "0.50", size: "1.0"})
       #TODO: Add response sample
   """
   def create_order(params, config \\ nil) do
@@ -28,7 +28,7 @@ defmodule ExOkex.Spot do
 
   ## Examples
 
-  iex> ExOkex.create_bulk_orders([
+  iex> ExOkex.Spot.Private.create_bulk_orders([
     { "client_oid":"20180728",
       "instrument_id":"btc-usdt",
       "side":"sell",
@@ -61,7 +61,7 @@ defmodule ExOkex.Spot do
 
   ## Example
 
-          iex(1)> ExOkex.Spot.get_balance("btc")
+          iex(1)> ExOkex.Spot.Private.get_balance("btc")
           {:ok,
            %{
              "available" => "0.005",
@@ -84,7 +84,7 @@ defmodule ExOkex.Spot do
 
   ## Example
 
-  iex> ExOkex.Spot.cancel_order("1611729012263936", %{"instrument_id":"btc-usdt"})
+  iex> ExOkex.Spot.Private.cancel_order("1611729012263936", %{"instrument_id":"btc-usdt"})
   # TODO: Add response
   """
   def cancel_order(order_id, %{} = params, config \\ nil) do
@@ -96,7 +96,7 @@ defmodule ExOkex.Spot do
 
   ## Examples
 
-        iex(3)> ExOkex.Spot.list_accounts()
+        iex(3)> ExOkex.Spot.Private.list_accounts()
         {:ok,
          [
            %{
