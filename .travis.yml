@@ -6,7 +6,9 @@ elixir:
   - '1.8'
   - '1.9'
 
-otp_release: '21.0'
+otp_release:
+  - '21.0'
+  - '22.0'
 
 script:
   - mix dialyzer --halt-exit-status
