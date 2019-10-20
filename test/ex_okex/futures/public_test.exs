@@ -1,32 +1,23 @@
 defmodule ExOkex.Futures.PublicTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import Mock
+  alias ExOkex.Futures
 
-  import TestHelper
+  test ".instruments returns a list" do
+    use_cassette "futures/public/instruments_ok" do
+      assert {:ok, instruments} = Futures.Public.instruments()
 
-  alias ExOkex.Futures.Public, as: Api
+      assert Enum.any?(instruments) == true
+      assert %Futures.Instrument{} = instrument = instruments |> hd()
+      assert instrument.instrument_id != nil
+    end
+  end
 
-  describe ".instruments" do
-    test "returns the instruments" do
-      instruments = [
-        %{
-          "instrument_id" => "BTC-USD-190322",
-          "underlying_index" => "BTC",
-          "quote_currency" => "USD",
-          "tick_size" => "0.01",
-          "contract_val" => "100",
-          "listing" => "2019-03-08",
-          "delivery" => "2019-03-22",
-          "trade_increment" => "1",
-          "alias" => "this_week"
-        }
-      ]
-
-      response = http_response(instruments, 200)
-
-      with_mock_request(:get, response, fn ->
-        assert {:ok, returned_instruments} = Api.instruments()
-        assert returned_instruments == instruments
-      end)
+  test ".instruments bubbles errors" do
+    with_mock HTTPoison,
+      get: fn _url, _headers -> {:error, %HTTPoison.Error{reason: :timeout}} end do
+      assert {:error, :timeout} = Futures.Public.instruments()
     end
   end
 end

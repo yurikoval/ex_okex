@@ -1,31 +1,23 @@
 defmodule ExOkex.Swap.PublicTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import Mock
+  alias ExOkex.Swap
 
-  import TestHelper
+  test ".instruments returns a list" do
+    use_cassette "swap/public/instruments_ok" do
+      assert {:ok, instruments} = Swap.Public.instruments()
 
-  alias ExOkex.Swap.Public, as: Api
+      assert Enum.any?(instruments) == true
+      assert %Swap.Instrument{} = instrument = instruments |> hd()
+      assert instrument.instrument_id != nil
+    end
+  end
 
-  describe ".instruments" do
-    test "returns the instruments" do
-      instruments = [
-        %{
-          "instrument_id" => "BTC-USD-SWAP",
-          "underlying_index" => "BTC",
-          "quote_currency" => "USD",
-          "tick_size" => "0.01",
-          "contract_val" => "100",
-          "listing" => "2019-03-08",
-          "delivery" => "2019-03-22",
-          "size_increment" => "1"
-        }
-      ]
-
-      response = http_response(instruments, 200)
-
-      with_mock_request(:get, response, fn ->
-        assert {:ok, returned_instruments} = Api.instruments()
-        assert returned_instruments == instruments
-      end)
+  test ".instruments bubbles errors" do
+    with_mock HTTPoison,
+      get: fn _url, _headers -> {:error, %HTTPoison.Error{reason: :timeout}} end do
+      assert {:error, :timeout} = Swap.Public.instruments()
     end
   end
 end
