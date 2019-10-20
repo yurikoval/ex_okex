@@ -1,4 +1,10 @@
 defmodule ExOkex.Futures.Public do
+  @moduledoc """
+  Public Futures Client
+
+  https://www.okex.com/docs/en/#futures-README
+  """
+
   import ExOkex.Api.Public
   alias ExOkex.Futures
 

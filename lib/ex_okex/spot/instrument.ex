@@ -1,4 +1,10 @@
 defmodule ExOkex.Spot.Instrument do
+  @moduledoc """
+  Spot instrument struct holding currency information
+
+  https://www.okex.com/docs/en/#spot-currency
+  """
+
   alias __MODULE__
 
   @type t :: %Instrument{

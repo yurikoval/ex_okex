@@ -1,4 +1,10 @@
 defmodule ExOkex.Futures.Instrument do
+  @moduledoc """
+  Futures instrument struct holding contract information
+
+  https://www.okex.com/docs/en/#futures-contract_information
+  """
+
   alias __MODULE__
 
   @type t :: %Instrument{

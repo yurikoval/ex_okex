@@ -1,4 +1,10 @@
 defmodule ExOkex.Swap.Instrument do
+  @moduledoc """
+  Swap instrument struct holding contract information
+
+  https://www.okex.com/docs/en/#swap-swap---contract_information
+  """
+
   alias __MODULE__
 
   @type t :: %Instrument{

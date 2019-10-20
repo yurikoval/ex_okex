@@ -1,4 +1,9 @@
 defmodule ExOkex.Spot.Public do
+  @moduledoc """
+  Public Spot Client
+
+  https://www.okex.com/docs/en/#spot-README
+  """
   import ExOkex.Api.Public
   alias ExOkex.Spot
 
