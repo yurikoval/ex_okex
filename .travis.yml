@@ -10,8 +10,7 @@ otp_release:
   - '22.0'
 
 script:
-  - mix test
-  - mix dialyzer --halt-exit-status
+  - bin/test
 
 cache:
   directories:
