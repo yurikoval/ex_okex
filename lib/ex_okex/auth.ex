@@ -1,4 +1,10 @@
 defmodule ExOkex.Auth do
+  @moduledoc """
+  Handle request signing for API Authentication
+
+  https://www.okex.com/docs/en/#summary-yan-zheng
+  """
+
   @spec timestamp :: String.t()
   def timestamp, do: (:os.system_time(:millisecond) / 1000) |> Float.to_string()
 

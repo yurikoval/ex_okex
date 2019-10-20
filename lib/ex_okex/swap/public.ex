@@ -1,4 +1,9 @@
 defmodule ExOkex.Swap.Public do
+  @moduledoc """
+  Public Swap Client
+
+  https://www.okex.com/docs/en/#swap-README
+  """
   import ExOkex.Api.Public
   alias ExOkex.Swap
 

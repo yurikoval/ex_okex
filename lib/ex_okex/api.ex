@@ -1,4 +1,8 @@
 defmodule ExOkex.Api do
+  @moduledoc """
+  API Base
+  """
+
   @type path :: String.t()
   @type config :: ExOkex.Config.t()
   @type params :: map
