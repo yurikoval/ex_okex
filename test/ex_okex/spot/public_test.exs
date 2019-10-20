@@ -1,29 +1,23 @@
 defmodule ExOkex.Spot.PublicTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import Mock
+  alias ExOkex.Spot
 
-  import TestHelper
+  test ".instruments returns a list" do
+    use_cassette "spot/public/instruments_ok" do
+      assert {:ok, instruments} = Spot.Public.instruments()
 
-  alias ExOkex.Spot.Public, as: Api
+      assert Enum.any?(instruments) == true
+      assert %Spot.Instrument{} = instrument = instruments |> hd()
+      assert instrument.instrument_id != nil
+    end
+  end
 
-  describe ".instruments" do
-    test "returns the instruments" do
-      instruments = [
-        %{
-          "base_currency" => "BTC",
-          "instrument_id" => "BTC-USDT",
-          "min_size" => "0.001",
-          "quote_currency" => "USDT",
-          "size_increment" => "0.00000001",
-          "tick_size" => "0.1"
-        }
-      ]
-
-      response = http_response(instruments, 200)
-
-      with_mock_request(:get, response, fn ->
-        assert {:ok, returned_instruments} = Api.instruments()
-        assert returned_instruments == instruments
-      end)
+  test ".instruments bubbles errors" do
+    with_mock HTTPoison,
+      get: fn _url, _headers -> {:error, %HTTPoison.Error{reason: :timeout}} end do
+      assert {:error, :timeout} = Spot.Public.instruments()
     end
   end
 end
