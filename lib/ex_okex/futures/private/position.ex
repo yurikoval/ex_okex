@@ -14,7 +14,7 @@ defmodule ExOkex.Futures.Private.Position do
     positions =
       holdings
       |> Enum.map(&to_crossed_struct/1)
-      |> Enum.map(fn {:ok, i} -> i end)
+      |> Enum.map(fn {:ok, p} -> p end)
 
     {:ok, positions}
   end
@@ -23,7 +23,7 @@ defmodule ExOkex.Futures.Private.Position do
     positions =
       holdings
       |> Enum.map(&to_fixed_struct/1)
-      |> Enum.map(fn {:ok, i} -> i end)
+      |> Enum.map(fn {:ok, p} -> p end)
 
     {:ok, positions}
   end

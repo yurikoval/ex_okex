@@ -104,4 +104,16 @@ defmodule ExOkex.Futures.Private do
 
   """
   defdelegate position(instrument_id, config \\ nil), to: Private.Position
+
+  @doc """
+  Retrieve the information on all your positions in the futures account.
+
+  https://www.okex.com/docs/en/#futures-hold_information
+
+  ## Examples
+
+      iex(3)> ExOkex.Futures.Private.list_positions()
+
+  """
+  defdelegate list_positions(config \\ nil), to: Private.ListPositions
 end
