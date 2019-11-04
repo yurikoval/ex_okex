@@ -6,6 +6,7 @@ defmodule ExOkex.Futures.Private do
   """
 
   import ExOkex.Api.Private
+  alias ExOkex.Futures.Private
 
   @type params :: map
   @type config :: ExOkex.Config.t()
@@ -93,16 +94,14 @@ defmodule ExOkex.Futures.Private do
   end
 
   @doc """
-  Get the information of holding positions of a contract.
+  Retrieve information on your positions of a single contract.
 
   https://www.okex.com/docs/en/#futures-hold_information
 
   ## Examples
 
-      iex(3)> ExOkex.Futures.get_position("BTC-USD-190329")
+      iex(3)> ExOkex.Futures.Private.position("BTC-USD-190329")
 
   """
-  def get_position(instrument_id, config \\ nil) do
-    get("#{@prefix}/#{instrument_id}/position", %{}, config)
-  end
+  defdelegate position(instrument_id, config \\ nil), to: Private.Position
 end
