@@ -9,52 +9,75 @@ defmodule ExOkex.Swap.Private.PositionTest do
     api_passphrase: "OKEX_API_PASSPHRASE"
   }
 
-  test "returns position info" do
-    response =
-      http_response(
-        [
-          %{
-            "created_at" => "2019-02-12T15:10:04.000Z",
-            "instrument_id" => "BTC-USD-190329",
-            "leverage" => "20",
-            "liquidation_price" => "0.0",
-            "long_avail_qty" => "0",
-            "long_avg_cost" => "3870.5",
-            "long_qty" => "0",
-            "long_settlement_price" => "3870.5",
-            "margin_mode" => "crossed",
-            "realised_pnl" => "-0.00011875",
-            "short_avail_qty" => "0",
-            "short_avg_cost" => "3863",
-            "short_qty" => "0",
-            "short_settlement_price" => "3863",
-            "updated_at" => "2019-03-10T07:19:14.000Z"
-          }
-        ],
-        200
-      )
+  test "can return crossed positions" do
+    data = %{
+      "margin_mode" => "crossed",
+      "timestamp" => "2019-09-27T03:49:02.018Z",
+      "holding" => [
+        %{
+          "avail_position" => "3",
+          "avg_cost" => "59.49",
+          "instrument_id" => "LTC-USD-SWAP",
+          "last" => "55.79",
+          "leverage" => "10.00",
+          "liquidation_price" => "4.37",
+          "maint_margin_ratio" => "0.0100",
+          "margin" => "0.0537",
+          "position" => "3",
+          "realized_pnl" => "0.0000",
+          "settled_pnl" => "-0.0330",
+          "settlement_price" => "55.84",
+          "side" => "long",
+          "timestamp" => "2019-09-27T03:49:02.018Z"
+        }
+      ]
+    }
+
+    response = http_response(data, 200)
 
     with_mock_request(:get, response, fn ->
-      assert {:ok,
-              [
-                %{
-                  "leverage" => "20",
-                  "created_at" => "2019-02-12T15:10:04.000Z",
-                  "instrument_id" => "BTC-USD-190329",
-                  "liquidation_price" => "0.0",
-                  "long_avail_qty" => "0",
-                  "long_avg_cost" => "3870.5",
-                  "long_qty" => "0",
-                  "long_settlement_price" => "3870.5",
-                  "margin_mode" => "crossed",
-                  "realised_pnl" => "-0.00011875",
-                  "short_avail_qty" => "0",
-                  "short_avg_cost" => "3863",
-                  "short_qty" => "0",
-                  "short_settlement_price" => "3863",
-                  "updated_at" => "2019-03-10T07:19:14.000Z"
-                }
-              ]} == Swap.Private.position("BTC-USD-190329", @config)
+      assert {:ok, positions} = Swap.Private.position("LTC-USD-SWAP", @config)
+      assert Enum.count(positions) == 1
+
+      assert [%Swap.CrossedPosition{} = position | _] = positions
+      assert position.instrument_id == "LTC-USD-SWAP"
+      assert position.leverage == "10.00"
+    end)
+  end
+
+  test "can return fixed positions" do
+    data = %{
+      "margin_mode" => "fixed",
+      "timestamp" => "2019-09-27T03:47:37.230Z",
+      "holding" => [
+        %{
+          "avail_position" => "20",
+          "avg_cost" => "8025.0",
+          "instrument_id" => "BTC-USD-SWAP",
+          "last" => "8113.1",
+          "leverage" => "15.00",
+          "liquidation_price" => "7002.6",
+          "maint_margin_ratio" => "0.0050",
+          "margin" => "0.0454",
+          "position" => "20",
+          "realized_pnl" => "-0.0001",
+          "settled_pnl" => "0.0076",
+          "settlement_price" => "8279.2",
+          "side" => "long",
+          "timestamp" => "2019-09-27T03:47:37.230Z"
+        }
+      ]
+    }
+
+    response = http_response(data, 200)
+
+    with_mock_request(:get, response, fn ->
+      assert {:ok, positions} = Swap.Private.position("BTC-USD-SWAP", @config)
+      assert Enum.count(positions) == 1
+
+      assert [%Swap.FixedPosition{} = position | _] = positions
+      assert position.instrument_id == "BTC-USD-SWAP"
+      assert position.leverage == "15.00"
     end)
   end
 end
