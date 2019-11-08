@@ -81,14 +81,26 @@ defmodule ExOkex.Swap.Private do
   defdelegate list_accounts(config \\ nil), to: Private.ListAccounts
 
   @doc """
-  Get the information of holding positions of a contract.
+  Retrieve information on your positions of a single contract.
 
-  https://www.okex.com/docs/en/#swap-hold_information
+  https://www.okex.com/docs/en/#swap-swap---only
 
   ## Examples
 
-      iex(3)> ExOkex.Swap.get_position("BTC-USD-190329")
+      iex(3)> ExOkex.Swap.position("BTC-USD-190329")
 
   """
   defdelegate position(instrument_id, config \\ nil), to: Private.Position
+
+  @doc """
+  Retrieve the information on all your positions in the swap account.
+
+  https://www.okex.com/docs/en/#swap-swap---hold_information
+
+  ## Examples
+
+      iex(3)> ExOkex.Swap.list_positions()
+
+  """
+  defdelegate list_positions(config \\ nil), to: Private.ListPositions
 end
