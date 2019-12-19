@@ -8,7 +8,7 @@ end
 defmodule ExOkex.WsTest do
   @moduledoc false
 
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
 
