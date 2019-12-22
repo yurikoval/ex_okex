@@ -35,8 +35,5 @@ jobs:
       - name: Install Dependencies
         run: mix deps.get
 
-      - name: Test
-        run: mix test
-
-      - name: Dialyzer
-        run: mix dialyzer --halt-exit-status
+      - name: Hex Audit, Test, Credo & Dialyzer
+        run: bin/test
