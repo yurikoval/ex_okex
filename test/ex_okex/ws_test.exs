@@ -15,11 +15,14 @@ defmodule ExOkex.WsTest do
   setup do
     channels = ["futures/trade:BTC-USD-190904"]
 
-    {:ok, socket} =
-      WsWrapper.start_link(%{
-        channels: channels,
-        require_auth: false,
-        config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
+    socket =
+      start_supervised!({
+        WsWrapper,
+        %{
+          channels: channels,
+          require_auth: false,
+          config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
+        }
       })
 
     {:ok, socket: socket, state: :sys.get_state(socket)}
