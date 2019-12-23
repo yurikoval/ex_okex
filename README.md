@@ -2,7 +2,8 @@
 
 OKEX API client for Elixir.
 
-![](https://github.com/yurikoval/ex_okex/workflows/.github/workflows/test.yml/badge.svg)
+[![Build Status](https://github.com/yurikoval/ex_okex/workflows/.github/workflows/test.yml/badge.svg)](https://github.com/yurikoval/ex_okex/actions?query=workflow%3A.github%2Fworkflows%2Ftest.yml)
+[![hex.pm version](https://img.shields.io/hexpm/v/ex_okex.svg?style=flat)](https://hex.pm/packages/ex_okex)
 
 ## Installation
 
