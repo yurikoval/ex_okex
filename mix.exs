@@ -32,7 +32,7 @@ defmodule ExOkex.Mixfile do
       {:exvcr, "~> 0.10", only: :test},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.1.0", only: :dev, runtime: false}
     ]
   end
 
