@@ -17,8 +17,8 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.create_order(%{
-    instrument_id: "BTC-USD-180213",
+  iex> ExOkex.Futures.Private.create_order(%{
+    instrument_id: "BTC-USD-210409",
     leverage: "10",
     orders_data: [%{
       type: "1",
@@ -39,7 +39,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.create_bulk_orders([
+  iex> ExOkex.Futures.Private.create_bulk_orders([
     %{"instrument_id":"BTC-USD-180213",
       "type":"1",
       "price":"432.11",
@@ -63,7 +63,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Example
 
-  iex> ExOkex.Futures.cancel_orders("BTC-USD-180309", [1600593327162368,1600593327162369])
+  iex> ExOkex.Futures.Private.cancel_orders("BTC-USD-180309", [1600593327162368,1600593327162369])
 
   """
   defdelegate cancel_orders(instrument_id, order_ids \\ [], params \\ %{}, config \\ nil),
@@ -76,7 +76,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.amend_bulk_orders("BTC-USD-180213", [
+  iex> ExOkex.Futures.Private.amend_bulk_orders("BTC-USD-180213", [
     %{amend_data: [
       %{order_id: "305512815291895607",new_size: "2"},
       %{order_id: "305512815291895606",new_size: "1"}
@@ -93,7 +93,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.list_accounts()
+  iex> ExOkex.Futures.Private.list_accounts()
 
   """
   defdelegate list_accounts(config \\ nil), to: Private.ListAccounts
@@ -105,7 +105,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.Private.position("BTC-USD-190329")
+  iex> ExOkex.Futures.Private.Private.position("BTC-USD-190329")
 
   """
   defdelegate position(instrument_id, config \\ nil), to: Private.Position
@@ -117,7 +117,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.Private.list_positions()
+  iex> ExOkex.Futures.Private.Private.list_positions()
 
   """
   defdelegate list_positions(config \\ nil), to: Private.ListPositions
