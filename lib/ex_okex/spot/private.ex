@@ -7,6 +7,10 @@ defmodule ExOkex.Spot.Private do
 
   alias ExOkex.Spot.Private
 
+  @type params :: map
+  @type config :: ExOkex.Config.t()
+  @type response :: ExOkex.Api.response()
+
   @doc """
   Place a new order.
 
@@ -77,6 +81,22 @@ defmodule ExOkex.Spot.Private do
   """
   defdelegate cancel_orders(instrument_id, order_ids \\ [], params \\ %{}, config \\ nil),
     to: Private.CancelOrders
+
+  @doc """
+  Amend multiple open orders for a specific trading pair (up to 10 orders)
+
+  https://www.okex.com/docs/en/#spot-amend_batch
+
+  ## Examples
+
+  iex> ExOkex.Spot.Private.amend_bulk_orders([
+    %{"order_id" => "305512815291895607","instrument_id" => "BTC-USDT","new_size" => "2"},
+    %{"order_id" => "305512815291895606","instrument_id" => "BTC-USDT","new_size" => "1"}
+    ])
+
+  """
+  @spec amend_bulk_orders([params], config | nil) :: response
+  defdelegate amend_bulk_orders(params, config \\ nil), to: Private.AmendBulkOrders
 
   @doc """
   List accounts.
