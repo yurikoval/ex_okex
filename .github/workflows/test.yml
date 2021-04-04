@@ -29,8 +29,11 @@ jobs:
       - name: Cache Elixir
         uses: actions/cache@v2.1.4
         with:
-          path: deps
-          key: elixir-cache-${{secrets.CACHE_VERSION}}-${{matrix.elixir}}-otp-${{matrix.otp}}-${{runner.os}}-${{hashFiles('mix.lock')}}-${{github.ref}}
+          path: |
+            deps
+            _build/dev
+            _build/test
+          key: elixir-cache-${{secrets.CACHE_VERSION}}-${{matrix.elixir}}-otp-${{matrix.otp}}-${{runner.os}}-${{hashFiles('mix.lock')}}
 
       - name: Install Dependencies
         run: mix deps.get
