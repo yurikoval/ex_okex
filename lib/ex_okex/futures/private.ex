@@ -8,6 +8,7 @@ defmodule ExOkex.Futures.Private do
   alias ExOkex.Futures.Private
 
   @type params :: map
+  @type instrument_id :: String.t()
   @type config :: ExOkex.Config.t()
   @type response :: ExOkex.Api.response()
 
@@ -16,8 +17,8 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.create_order(%{
-    instrument_id: "BTC-USD-180213",
+  iex> ExOkex.Futures.Private.create_order(%{
+    instrument_id: "BTC-USD-210409",
     leverage: "10",
     orders_data: [%{
       type: "1",
@@ -38,7 +39,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.create_bulk_orders([
+  iex> ExOkex.Futures.Private.create_bulk_orders([
     %{"instrument_id":"BTC-USD-180213",
       "type":"1",
       "price":"432.11",
@@ -62,11 +63,28 @@ defmodule ExOkex.Futures.Private do
 
   ## Example
 
-  iex> ExOkex.Futures.cancel_orders("BTC-USD-180309", [1600593327162368,1600593327162369])
+  iex> ExOkex.Futures.Private.cancel_orders("BTC-USD-180309", [1600593327162368,1600593327162369])
 
   """
   defdelegate cancel_orders(instrument_id, order_ids \\ [], params \\ %{}, config \\ nil),
     to: Private.CancelOrders
+
+  @doc """
+  Amend multiple open orders for a specific trading pair (up to 10 orders)
+
+  https://www.okex.com/docs/en/#futures-amend_batch
+
+  ## Examples
+
+  iex> ExOkex.Futures.Private.amend_bulk_orders("BTC-USD-180213", [
+    %{amend_data: [
+      %{order_id: "305512815291895607",new_size: "2"},
+      %{order_id: "305512815291895606",new_size: "1"}
+    ]})
+
+  """
+  @spec amend_bulk_orders(instrument_id, params, config | nil) :: response
+  defdelegate amend_bulk_orders(instrument_id, params, config \\ nil), to: Private.AmendBulkOrders
 
   @doc """
   Get the futures account info of all token.
@@ -75,7 +93,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.list_accounts()
+  iex> ExOkex.Futures.Private.list_accounts()
 
   """
   defdelegate list_accounts(config \\ nil), to: Private.ListAccounts
@@ -87,7 +105,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.Private.position("BTC-USD-190329")
+  iex> ExOkex.Futures.Private.Private.position("BTC-USD-190329")
 
   """
   defdelegate position(instrument_id, config \\ nil), to: Private.Position
@@ -99,7 +117,7 @@ defmodule ExOkex.Futures.Private do
 
   ## Examples
 
-  iex> ExOkex.Futures.Private.list_positions()
+  iex> ExOkex.Futures.Private.Private.list_positions()
 
   """
   defdelegate list_positions(config \\ nil), to: Private.ListPositions
