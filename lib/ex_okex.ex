@@ -1,3 +1,5 @@
 defmodule ExOkex do
-  @moduledoc false
+  @moduledoc """
+  Okex API client
+  """
 end
