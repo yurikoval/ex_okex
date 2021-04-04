@@ -10,7 +10,6 @@ defmodule ExOkex.Ws do
       use WebSockex
       alias ExOkex.Config
       @base Application.get_env(:ex_okex, :ws_endpoint, "wss://real.okex.com:8443/ws/v3")
-      @ping_interval Application.get_env(:ex_okex, :ping_interval, 5_000)
 
       def start_link(args \\ %{}) do
         name = args[:name] || __MODULE__
