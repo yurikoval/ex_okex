@@ -8,6 +8,7 @@ defmodule ExOkex.Futures.Private do
   alias ExOkex.Futures.Private
 
   @type params :: map
+  @type instrument_id :: String.t()
   @type config :: ExOkex.Config.t()
   @type response :: ExOkex.Api.response()
 
@@ -67,6 +68,23 @@ defmodule ExOkex.Futures.Private do
   """
   defdelegate cancel_orders(instrument_id, order_ids \\ [], params \\ %{}, config \\ nil),
     to: Private.CancelOrders
+
+  @doc """
+  Amend multiple open orders for a specific trading pair (up to 10 orders)
+
+  https://www.okex.com/docs/en/#futures-amend_batch
+
+  ## Examples
+
+  iex> ExOkex.Futures.amend_bulk_orders("BTC-USD-180213", [
+    %{amend_data: [
+      %{order_id: "305512815291895607",new_size: "2"},
+      %{order_id: "305512815291895606",new_size: "1"}
+    ]})
+
+  """
+  @spec amend_bulk_orders(instrument_id, params, config | nil) :: response
+  defdelegate amend_bulk_orders(instrument_id, params, config \\ nil), to: Private.AmendBulkOrders
 
   @doc """
   Get the futures account info of all token.
