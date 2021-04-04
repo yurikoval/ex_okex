@@ -9,12 +9,11 @@ defmodule ExOkex.Ws do
     quote do
       use WebSockex
       alias ExOkex.Config
-      @base Application.get_env(:ex_okex, :ws_endpoint, "wss://real.okex.com:8443/ws/v3")
 
       def start_link(args \\ %{}) do
         name = args[:name] || __MODULE__
         state = Map.merge(args, %{heartbeat: 0})
-        WebSockex.start_link(@base, __MODULE__, state, name: name)
+        WebSockex.start_link(endpoint(), __MODULE__, state, name: name)
       end
 
       # Callbacks
@@ -105,6 +104,10 @@ defmodule ExOkex.Ws do
       def terminate(_, _), do: :ok
 
       # Helpers
+
+      defp endpoint do
+        Application.get_env(:ex_okex, :ws_endpoint, "wss://real.okex.com:8443/ws/v3")
+      end
 
       defp subscribe(server, channels) do
         params = Jason.encode!(%{op: "subscribe", args: channels})
