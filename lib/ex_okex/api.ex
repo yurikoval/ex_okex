@@ -8,7 +8,8 @@ defmodule ExOkex.Api do
   @type params :: map
   @type status_code :: integer
   @type body :: term
-  @type response :: {:ok, term} | {:error, term} | {:error, body, status_code}
+  @type error_reason :: :rate_limited | term
+  @type response :: {:ok, term} | {:error, error_reason} | {:error, body, status_code}
 
   @spec url(path, config) :: String.t()
   def url(path, config), do: config.api_url <> path
@@ -32,17 +33,21 @@ defmodule ExOkex.Api do
   def parse_response(response) do
     case response do
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->
-        if status_code in 200..299 do
-          {:ok, Jason.decode!(body)}
-        else
-          case Jason.decode(body) do
-            {:ok, json} -> {:error, {json["code"], json["message"]}, status_code}
-            {:error, _} -> {:error, body, status_code}
-          end
+        case status_code do
+          code when code in 200..299 -> {:ok, Jason.decode!(body)}
+          429 -> {:error, :rate_limited}
+          _ -> parse_error_body(body, status_code)
         end
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
+    end
+  end
+
+  defp parse_error_body(body, status_code) do
+    case Jason.decode(body) do
+      {:ok, json} -> {:error, {json["code"], json["message"]}, status_code}
+      {:error, _} -> {:error, body, status_code}
     end
   end
 end
