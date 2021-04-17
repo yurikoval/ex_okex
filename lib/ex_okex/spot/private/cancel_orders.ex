@@ -8,6 +8,6 @@ defmodule ExOkex.Spot.Private.CancelOrders do
     new_params = params |> Map.merge(%{instrument_id: instrument_id, order_ids: order_ids})
 
     @path
-    |> post(new_params, config)
+    |> post([new_params], config)
   end
 end
