@@ -5,7 +5,7 @@ defmodule ExOkex.Mixfile do
     [
       app: :ex_okex,
       version: "0.5.1",
-      elixir: "~> 1.6",
+      elixir: "~> 1.10",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
