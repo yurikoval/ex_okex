@@ -11,35 +11,37 @@ defmodule ExOkex.WsTest do
   use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
+  import Mock
 
   setup do
-    channels = ["futures/trade:BTC-USD-190904"]
+    state = %{
+      channels: ["futures/trade:BTC-USD-190904"],
+      config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]},
+      heartbeat: 0,
+      require_auth: false
+    }
 
-    socket =
-      start_supervised!({
-        WsWrapper,
-        %{
-          channels: channels,
-          require_auth: false,
-          config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]}
-        }
-      })
+    {:ok, state: state}
+  end
 
-    {:ok, socket: socket, state: :sys.get_state(socket)}
+  describe "start_link" do
+    test "starts WebSockex with the configured state", %{state: state} do
+      test_pid = self()
+
+      with_mock WebSockex,
+        start_link: fn endpoint, module, socket_state, options ->
+          send(test_pid, {:start_link, endpoint, module, socket_state, options})
+          {:ok, test_pid}
+        end do
+        assert {:ok, ^test_pid} = WsWrapper.start_link(state)
+
+        assert_received {:start_link, "wss://real.okex.com:8443/ws/v3", WsWrapper, ^state,
+                         [name: WsWrapper]}
+      end
+    end
   end
 
   describe "initial state" do
-    test "get state", %{state: state} do
-      assert state == %{
-               channels: ["futures/trade:BTC-USD-190904"],
-               config: %{
-                 access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]
-               },
-               heartbeat: 0,
-               require_auth: false
-             }
-    end
-
     test "pong response from okex", %{state: state} do
       data = {:binary, <<43, 200, 207, 75, 7, 0>>}
 
