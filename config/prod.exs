@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :ex_okex,
   api_key: System.get_env("OKEX_API_KEY"),

@@ -10,30 +10,25 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
-
-    strategy:
-      matrix:
-        otp: [22.x, 23.x, 24.x]
-        elixir: [1.10.x, 1.11.x, 1.12.x, 1.13.x]
+    runs-on: ubuntu-24.04
+    name: OTP 29.1.2 / Elixir 1.20.4
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v7
 
-      - uses: erlef/setup-elixir@v1.11
+      - uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{matrix.otp}}
-          elixir-version: ${{matrix.elixir}}
+          otp-version: 29.1.2
+          elixir-version: 1.20.4
 
       - name: Cache Elixir
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v6
         with:
           path: |
             deps
             _build/dev
             _build/test
-          key: elixir-cache-${{secrets.CACHE_VERSION}}-${{matrix.elixir}}-otp-${{matrix.otp}}-${{runner.os}}-${{hashFiles('mix.lock')}}
+          key: elixir-cache-1.20.4-otp-29.1.2-${{runner.os}}-${{hashFiles('mix.lock')}}
 
       - name: Install Dependencies
         run: mix deps.get

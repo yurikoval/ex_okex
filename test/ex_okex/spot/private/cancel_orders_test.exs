@@ -1,6 +1,6 @@
 defmodule ExOkex.Spot.Private.CancelOrdersTest do
   use ExUnit.Case, async: false
-  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import TestHelper
   alias ExOkex.Spot
 
   @config %ExOkex.Config{
@@ -10,7 +10,7 @@ defmodule ExOkex.Spot.Private.CancelOrdersTest do
   }
 
   test ".cancel_orders" do
-    use_cassette "spot/private/cancel_ok" do
+    with_cassette("spot/private/cancel_ok", fn ->
       {:ok, %{"order_id" => order_id}} =
         Spot.Private.create_order(
           %{
@@ -38,6 +38,6 @@ defmodule ExOkex.Spot.Private.CancelOrdersTest do
                  | _
                ]
              } = response
-    end
+    end)
   end
 end
