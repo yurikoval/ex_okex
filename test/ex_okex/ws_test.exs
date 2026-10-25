@@ -19,7 +19,7 @@ defmodule ExOkex.WsTest do
       require_auth: false
     }
 
-    {:ok, args: args, state: Map.put(args, :heartbeat, 0)}
+    {:ok, args: args, state: args}
   end
 
   describe "start_link" do
@@ -32,6 +32,7 @@ defmodule ExOkex.WsTest do
 
       assert Process.whereis(WsWrapper) == socket
       assert :sys.get_state(socket) == state
+      assert_receive {:websocket_request, _request}, 1_000
     end
   end
 
@@ -61,6 +62,8 @@ defmodule ExOkex.WsTest do
 
     {:ok, {{127, 0, 0, 1}, port}} = :inet.sockname(listener)
 
+    parent = self()
+
     server =
       spawn(fn ->
         {:ok, socket} = :gen_tcp.accept(listener)
@@ -79,6 +82,8 @@ defmodule ExOkex.WsTest do
               "Connection: Upgrade\r\n" <>
               "Sec-WebSocket-Accept: #{accept}\r\n\r\n"
           )
+
+        send(parent, {:websocket_request, request})
 
         receive do
           :stop -> :gen_tcp.close(socket)
