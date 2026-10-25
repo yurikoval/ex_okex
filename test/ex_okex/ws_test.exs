@@ -11,33 +11,27 @@ defmodule ExOkex.WsTest do
   use ExUnit.Case, async: false
 
   import ExUnit.CaptureLog
-  import Mock
 
   setup do
-    state = %{
+    args = %{
       channels: ["futures/trade:BTC-USD-190904"],
       config: %{access_keys: ["OK_1_API_KEY", "OK_1_API_SECRET", "OK_1_API_PASSPHRASE"]},
-      heartbeat: 0,
       require_auth: false
     }
 
-    {:ok, state: state}
+    {:ok, args: args, state: Map.put(args, :heartbeat, 0)}
   end
 
   describe "start_link" do
-    test "starts WebSockex with the configured state", %{state: state} do
-      test_pid = self()
+    test "starts a supervised WebSockex process offline", %{args: args, state: state} do
+      endpoint = start_websocket_server()
+      Application.put_env(:ex_okex, :ws_endpoint, endpoint)
+      on_exit(fn -> Application.delete_env(:ex_okex, :ws_endpoint) end)
 
-      with_mock WebSockex,
-        start_link: fn endpoint, module, socket_state, options ->
-          send(test_pid, {:start_link, endpoint, module, socket_state, options})
-          {:ok, test_pid}
-        end do
-        assert {:ok, ^test_pid} = WsWrapper.start_link(state)
+      socket = start_supervised!({WsWrapper, args})
 
-        assert_received {:start_link, "wss://real.okex.com:8443/ws/v3", WsWrapper, ^state,
-                         [name: WsWrapper]}
-      end
+      assert Process.whereis(WsWrapper) == socket
+      assert :sys.get_state(socket) == state
     end
   end
 
@@ -58,6 +52,53 @@ defmodule ExOkex.WsTest do
     test "it logs disconnect", %{state: state} do
       assert capture_log(fn -> WsWrapper.handle_disconnect(%{}, state) end) =~
                "OKEX Disconnected!"
+    end
+  end
+
+  defp start_websocket_server do
+    {:ok, listener} =
+      :gen_tcp.listen(0, [:binary, ip: {127, 0, 0, 1}, active: false, reuseaddr: true])
+
+    {:ok, {{127, 0, 0, 1}, port}} = :inet.sockname(listener)
+
+    server =
+      spawn(fn ->
+        {:ok, socket} = :gen_tcp.accept(listener)
+        request = recv_headers(socket, "")
+        [_, key] = Regex.run(~r/sec-websocket-key:\s*(.+)\r\n/i, request)
+
+        accept =
+          :crypto.hash(:sha, String.trim(key) <> "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+          |> Base.encode64()
+
+        :ok =
+          :gen_tcp.send(
+            socket,
+            "HTTP/1.1 101 Switching Protocols\r\n" <>
+              "Upgrade: websocket\r\n" <>
+              "Connection: Upgrade\r\n" <>
+              "Sec-WebSocket-Accept: #{accept}\r\n\r\n"
+          )
+
+        receive do
+          :stop -> :gen_tcp.close(socket)
+        end
+      end)
+
+    on_exit(fn ->
+      :gen_tcp.close(listener)
+      send(server, :stop)
+    end)
+
+    "ws://127.0.0.1:#{port}"
+  end
+
+  defp recv_headers(socket, acc) do
+    if String.contains?(acc, "\r\n\r\n") do
+      acc
+    else
+      {:ok, data} = :gen_tcp.recv(socket, 0, 1_000)
+      recv_headers(socket, acc <> data)
     end
   end
 
