@@ -19,7 +19,7 @@ defmodule ExOkex.WsTest do
       require_auth: false
     }
 
-    {:ok, args: args, state: args}
+    {:ok, args: args, state: Map.put(args, :heartbeat, 0)}
   end
 
   describe "start_link" do

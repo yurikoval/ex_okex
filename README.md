@@ -15,6 +15,8 @@ def deps do
 end
 ```
 
+ExOkex 0.7 requires Elixir 1.11 or later.
+
 Run `mix deps.get` to install.
 
 ## Configuration
