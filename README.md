@@ -11,9 +11,11 @@ List the Hex package in your application dependencies.
 
 ```elixir
 def deps do
-  [{:ex_okex, "~> 0.6"}]
+  [{:ex_okex, "~> 0.7"}]
 end
 ```
+
+ExOkex 0.7 supports Elixir 1.20 on Erlang/OTP 29 only.
 
 Run `mix deps.get` to install.
 
@@ -26,7 +28,7 @@ Static API Key is the key you setup once and would never change. And this is wha
 Add the following configuration variables in your config/config.exs file:
 
 ```elixir
-use Mix.Config
+import Config
 
 config :ex_okex, api_key:        {:system, "OKEX_API_KEY"},
                  api_secret:     {:system, "OKEX_API_SECRET"},
@@ -37,21 +39,17 @@ Alternatively to hard coding credentials, the recommended approach is
 to use environment variables as follows:
 
 ```elixir
-use Mix.Config
+import Config
 
 config :ex_okex, api_key:        System.get_env("OKEX_API_KEY"),
                  api_secret:     System.get_env("OKEX_API_SECRET"),
                  api_passphrase: System.get_env("OKEX_API_PASSPHRASE")
 ```
 
-If you're using websocket then you need to do this config
+WebSocket users can also configure a custom endpoint:
 
 ```elixir
-use Mix.Config
-
-config :ex_okex, api_key:        System.get_env("OKEX_API_KEY"),
-                 api_secret:     System.get_env("OKEX_API_SECRET"),
-                 api_passphrase: System.get_env("OKEX_API_PASSPHRASE")
+config :ex_okex, ws_endpoint: "wss://real.okex.com:10442/ws/v3"
 ```
 
 
@@ -64,7 +62,6 @@ config = %ExOkex.Config{
   api_secret: "API_SECRET",
   api_passphrase: "API_PASSPHRASE",
   api_url: "API_URL" # optional
-  ws_endpoint: "wss://real.okex.com:10442/ws/v3" # optional
 }
 ExOkex.list_accounts() # use config as specified in config.exs
 ExOkex.list_accounts(config) # use the passed config struct param

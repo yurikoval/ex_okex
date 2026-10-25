@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # Read from environment variables
 config :ex_okex,

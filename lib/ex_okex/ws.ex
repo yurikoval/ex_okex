@@ -1,7 +1,7 @@
 defmodule ExOkex.Ws do
   @moduledoc false
 
-  import Logger, only: [info: 1, warn: 1]
+  import Logger, only: [info: 1, warning: 1]
   import Process, only: [send_after: 3]
 
   # Client API
@@ -66,7 +66,7 @@ defmodule ExOkex.Ws do
           send_after(self(), {:heartbeat, :ping, heartbeat + 1}, 1_000)
           {:ok, state}
         else
-          :ok = warn("#{__MODULE__} terminated due to " <> "no heartbeat ##{heartbeat}")
+          :ok = warning("#{__MODULE__} terminated due to " <> "no heartbeat ##{heartbeat}")
           {:close, state}
         end
       end

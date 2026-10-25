@@ -2,7 +2,7 @@
 
 ## Purpose
 
-ExOkex is an Elixir client for the legacy OKEx v3 HTTP and WebSocket APIs. Keep changes small and preserve the published client API and its supported Elixir range unless the task explicitly changes compatibility.
+ExOkex is an Elixir client for the legacy OKEx v3 HTTP and WebSocket APIs. Keep changes small and preserve the published client API unless the task explicitly changes it.
 
 ## Repository map
 
@@ -26,11 +26,9 @@ mix test path/to/focused_test.exs
 bin/test
 ```
 
-`bin/test` runs Hex retirement checks, warning-free dev and test compilation, the test suite, Credo, and Dialyzer. Run focused tests while iterating, then the full script before handing off.
+`bin/test` runs Hex retirement and advisory checks, warning-free dev and test compilation, the test suite, Credo, and Dialyzer. Run focused tests while iterating, then the full script before handing off.
 
-Current Hex advisory data flags the locked Hackney 1.x line. Clearing that requires a deliberate HTTPoison 3 / Elixir compatibility change; do not silence or bypass the audit. Report the baseline failure when it is outside the task scope.
-
-The package declares Elixir `~> 1.10`; CI covers Elixir 1.10–1.13 and OTP 22–24. `.tool-versions` selects the newest CI-era pair for local work. Do not use newer language features unless compatibility is deliberately being changed.
+The package supports only Elixir 1.20 on Erlang/OTP 29. `.tool-versions` and CI pin the exact supported versions.
 
 ## Implementation conventions
 
@@ -48,8 +46,8 @@ The package declares Elixir `~> 1.10`; CI covers Elixir 1.10–1.13 and OTP 22�
 - Add or update the matching test under `test/ex_okex/` for behavior changes.
 - Reuse `TestHelper.with_mock_request/3` and `http_response/2` for HTTP tests.
 - HTTPoison mocks are global; keep affected tests `async: false`.
-- Prefer mocks or existing ExVCR cassettes over live API requests.
-- Do not regenerate cassettes casually. If regeneration is required, inspect the diff for credentials and keep the header filters in `config/test.exs` intact.
+- Prefer mocks and existing recorded-response fixtures over live API requests.
+- Do not regenerate fixtures casually. If regeneration is required, inspect the diff for credentials before committing it.
 - WebSocket changes need focused coverage for callback return values, state, heartbeat behavior, and overridable callbacks.
 
 ## Sensitive boundaries
